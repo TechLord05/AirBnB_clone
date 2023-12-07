@@ -10,11 +10,23 @@ class BaseModel:
     """
     
 	def __init__(self, *args, **kwargs):
-    	""" initializes self """
-     
-		self.id = str(uuid.uuid4())
-		self.created_at = datetime.now
-		self.updated_at = datetime.now
+    	""" initializes a new instance of BaseModel.
+     	Arguments:
+			- *args: will not be used
+			- *kwargs: a dictionary of key values arguments
+      	"""
+       date_format = "%Y-%m-%dT%H:%M:%S.%f"
+
+		if kwargs:
+			for key, value in kwargs.items().
+				if key != "__class__"
+					if key in ["created_at", "updated_at"]
+						value = datetime.strptime(value, date_format)
+					setattr(self, key, value)
+		else:
+			self.id = str(uuid.uuid4())
+			self.created_at = datetime.now
+			self.updated_at = datetime.now
     
     def __str__(self):
         """A string reprensentation of instance."""
