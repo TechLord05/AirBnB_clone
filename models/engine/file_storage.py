@@ -39,5 +39,12 @@ class FileStorage:
         Only if the JSON file (__file_path) exists; otherwise, do nothing.
         If the file does not exist, no exception should be raised.
         """
+        if path.exists(self.__file_path):
+            with open(self.__file_path, 'r', encoding="utf-8") as file:
+               objects_serialized = json.load(file)
+               for prm_key, obj_dt in objects_serialized.items():
+                   cls_name, obj_id = key.split('-')
+                   # Create an instance of the class dynamically based on cls_name
+                   
         
         
