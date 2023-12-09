@@ -13,6 +13,7 @@ class FileStorage:
     """
     __file_path = "file.json"
     __objects = {}
+    cls_dict = {"BaseModel": BaseModel}
     
     def all(self):
         """Returns the dictionary objects."""
@@ -40,15 +41,12 @@ class FileStorage:
         Only if the JSON file (__file_path) exists; otherwise, do nothing.
         If the file does not exist, no exception should be raised.
         """
-        if path.exists(self.__file_path):
-            with open(self.__file_path, 'r', encoding="utf-8") as file:
-               objects_serialized = json.load(file)
-               for key, obj_dt in objects_serialized.items():
-                    cls_name, obj_id = key.split('-')
-                    # Create an instance of the class dynamically based on cls_name
-                    obj_class = globals()[class_name]
-                    obj_instance = obj_class(**obj_data)
-                    # Store the instance in __objects
-                    self.__objects[key] = obj_instance
-        
-        
+        try:
+            if self.__file_path:
+                with open(self.__file_path) as f:
+                    deserialized = json.load(f)
+                for key, val in deserialized.items():
+                    object = self.cls_dict[val['__class__']](**val)
+                    self.__objects[key] = object
+        except FileNotFoundError:
+            pass        
