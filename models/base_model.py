@@ -25,19 +25,18 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
-            #models.storage.new(self)
-            
-            
+
     def __str__(self):
         """A string representation of the instance."""
         class_name = self.__class__.__name__
         return "[{}] ({}) {}".format(class_name, self.id, self.__dict__)
+
     def save(self):
         """Update the updated_at attribute and save the instance."""
         self.updated_at = datetime.now()
         models.storage.save()
         models.storage.new(self)
-    
+
     def to_dict(self):
         """Returns a dictionary containing all keys/values."""
         v_dict = self.__dict__.copy()

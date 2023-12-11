@@ -2,6 +2,7 @@
 
 from models.base_model import BaseModel
 
+
 class City(BaseModel):
     """
     A subclass of BaseModel class
@@ -9,5 +10,5 @@ class City(BaseModel):
         state_id: (str) will be State.id
         name:     (str)
     """
-    state_id = ""
-    name = ""
+    state_id: str = ""
+    name: str = ""
