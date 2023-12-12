@@ -99,24 +99,18 @@ class HBNBCommand(cmd.Cmd):
     def do_all(self, line):
         """Prints all string representation of all instances."""
         args = line.split()
-        all_inst = storage.all()
+        all_inst = []
 
         if not args or args[0] not in HBNBCommand.__classes:
-            print(all_inst)
+            print("** class doesn't exist **")
             return
 
-        if args[0] not in HBNBCommand.__classes:
-            print("** class name doesn't exist **")
-            return
-
-        all_instances = storage.all()
         class_name = args[0]
+        all_instances = storage.all()
 
         for all_instance in all_instances.values():
-            if (len(args) > 0 and
-                    class_name == all_instance.__class__.__name__):
+            if len(args) > 0 and class_name == all_instance.__class__.__name__:
                 all_inst.append(all_instance.__str__())
-
             elif len(args) == 0:
                 all_inst.append(all_instance.__str__())
 
@@ -126,50 +120,50 @@ class HBNBCommand(cmd.Cmd):
         """Updates an instance based on the class name and id by adding
         or updating attribute (save the change into the JSON file).
         """
-        my_args = line.split()
+        args = line.split()
 
-        if not line:
+        if not args:
             print("** class name missing **")
             return
 
-        _class = my_args[0]
-        if _class not in HBNBCommand.__classes:
-            print("** class doesn't exist **")
+        rex = r'^(\S+)(?:\s(\S+)(?:\s(\S+)(?:\s(".*"|[^"]\S*)?)?)?)?'
+        match = re.search(rex, line)
+
+        if not match:
+            print("** invalid command format **")
             return
 
-        if len(my_args) < 2:
+        classname, uid, attribute, value = match.groups()
+
+        if classname not in HBNBCommand.__classes:
+            print("** class doesn't exist **")
+            return
+        elif not uid:
             print("** instance id missing **")
             return
 
-        inst_id = my_args[1]
-        keys = "{}.{}".format(_class, inst_id)
-        all_inst = storage.all()
-
-        if keys not in all_inst:
+        key = f"{classname}.{uid}"
+        if key not in storage.all():
             print("** no instance found **")
             return
-
-        if len(my_args) < 3:
+        elif not attribute:
             print("** attribute name missing **")
             return
-
-        attr_name = my_args[2]
-        if len(my_args) < 4:
+        elif not value:
             print("** value missing **")
             return
 
-        value = my_args[3]
+        obj = storage.all()[key]
 
-        _inst = all_inst[keys]
-        if hasattr(_inst, attr_name):
-            attr_type = type(getattr(_inst, attr_name))
-            try:
-                setattr(_inst, attr_name, attr_type(value))
-                _inst.save()
-            except (ValueError, TypeError):
-                print("** invalid value **")
-        else:
-            print("** attribute doesn't exist **")
+        # Store the previous updated_at value
+        # prev_updated_at = obj.updated_at
+
+        # Simplify attribute handling (without explicit checks)
+        setattr(obj, attribute, value)
+
+        # Always update the updated_at attribute
+        # obj.updated_at = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
+        storage.all()[key].save()
 
 
 if __name__ == "__main__":
